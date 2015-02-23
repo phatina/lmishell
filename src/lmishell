@@ -1,0 +1,55 @@
+#!/usr/bin/python
+# Copyright (C) 2015 Peter Hatina <phatina@redhat.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, see <http://www.gnu.org/licenses/>.
+
+import sys
+from lmi.shell import env
+from lmi.shell import util
+from lmi.shell.logger import logger
+
+
+if __name__ == '__main__':
+    # Parse CLI options.
+    options = env.Options()
+
+    # Set logger level
+    if options.verbose is True:
+        logger.setVerbose()
+    elif options.more_verbose is True:
+        logger.setMoreVerbose()
+    elif options.quiet is True:
+        logger.setQuiet()
+
+    interact = options.interact
+    script_ns = None
+
+    # Create a Shell instance. All other necessary stuff, such as prompts,
+    # exception hooks get also initialized.
+    shell = env.InteractiveShell(options=options)
+
+    # Execute an inline expression or script.
+    exit_code = None
+    if options.command:
+        script_ns, exit_code = env.exec_command(options.command, script_ns)
+    if options.script_args:
+        script_ns, exit_code = env.exec_script(options.script_args, script_ns)
+    if util.is_negative((options.command, options.script_args)):
+        interact = True
+
+    # Run the interpreter, if we need an interactive interface.
+    if interact:
+        shell(local_ns=script_ns, global_ns=script_ns)
+    elif exit_code is not None:
+        sys.exit(exit_code)

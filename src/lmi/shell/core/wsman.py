@@ -1,0 +1,2 @@
+class WSMANClient(object):
+    pass

@@ -1,0 +1,13 @@
+*.lmi
+*.pyc
+*.pyo
+*.swp
+aclocal.m4
+autom4te.cache
+build
+makefile.in
+configure
+install-sh
+missing
+py-compile
+.spyderproject
